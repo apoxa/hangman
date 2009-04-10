@@ -1,0 +1,13 @@
+BUG FIXES:
+
+* Fix some problems with the border of the window
+* Minor bugs every here and there
+
+IMPROVEMENTS:
+
+* Some kind of multi-player support
+* Maybe a word-list for single-player
+* Translate to english
+* New Makefile to be more variable
+* Complete redesign of the ugly code
+* Splashscreen

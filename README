@@ -1,0 +1,22 @@
+hangman - guess a word or die
+
+
+INTRODUCTION:
+
+   Hangman is s simple word-guessing game. You only have 8 chances to
+guess the word right, otherwise a little person will be hanged.
+You only have to guess single letters and letters you already
+guessed appear in a list to remind you of your failure!
+
+   Please mail any suggestions and bug reports to <bs@kniegeil.de>.
+Don't blame me too hard for the ugly code. I wrote it in about 5 hours
+and never ever did anything with curses before. It's also the first
+C-project I work on and I code C for half a year now. But I'm always
+open for a little hint to improve my code.
+
+INSTALLATION:
+
+   Hangman requires the curses library as a prerequisite.  If
+curses is not installed on your system, you may use the free ncurses
+package.  The game does not work with BSD curses, thus on BSD systems
+you will need the ncurses package.

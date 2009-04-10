@@ -1,0 +1,6 @@
+Installation Instructions
+*************************
+
+You only have to type `make' to compile the package.
+It doesn't install system-wide, you'll have to run it from the
+directory you compiled it in.
