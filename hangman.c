@@ -19,7 +19,7 @@ int main(void) {
     start_color();  // farben einschalten
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
-    
+
     do {
         char ratewort[80];      // Zu erratendes Wort
         char falsche[26] = { '\0' };       // Bereits falsch geratene Buchstaben
@@ -28,9 +28,10 @@ int main(void) {
         int laenge = 0, versuche = 0, fehler = 0;       // verschiedene Zwischenspeicher
         int cury = 0, curx = 0;         // cursor-koordinaten
         move(cury,curx); clear();
-        mvprintw(0,0,"*** HANGMAN ***");
-        mvprintw(1,0,"***************");
-        mvprintw(2,0,"%s", txt_3);
+        print_title();
+        CORD;
+        mvprintw(cury+2,(COLS-49)/2, txt_3);
+        CORD; move(cury+2,(COLS-49)/2);
         cbreak();       // input sofort nehmen, nicht auf \n warten
         noecho();       // Eingaben nicht anzeigen
     
@@ -52,13 +53,13 @@ int main(void) {
                         ratewort[laenge] = worteingabe;
                         laenge++;
                         CORD;
-                        mvprintw(2,curx,  "%c", ( ((worteingabe >= 65) && (worteingabe <= 122)) ? '*' : worteingabe ));
+                        mvprintw(cury,curx,  "%c", ( ((worteingabe >= 65) && (worteingabe <= 122)) ? '*' : worteingabe ));
                 }
             }
         } while ( worteingabe != '\n' && strlen(ratewort) < 81);
 
         if ( strlen(ratewort) == 80 ) {
-                mvprintw(3,0, "Sie haben die maximale Anzahl von Zeichen eingebgeben.");
+                mvprintw(cury+2,(COLS-40)/2, "Sie haben die maximale Anzahl von Zeichen eingebgeben.");
                 getch();
         }
     

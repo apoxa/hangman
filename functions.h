@@ -1,3 +1,30 @@
+const char *title[] = {
+    "HH   HH   AAA   NN   NN   GGGG",
+    "HH   HH  AAAAA  NNN  NN  GG  GG",
+    "HHHHHHH AA   AA NN N NN GG",
+    "HH   HH AAAAAAA NN  NNN GG   GG",
+    "HH   HH AA   AA NN   NN  GGGGGG",
+    "",
+    "    MM    MM   AAA   NN   NN", 
+    "    MMM  MMM  AAAAA  NNN  NN", 
+    "    MM MM MM AA   AA NN N NN", 
+    "    MM    MM AAAAAAA NN  NNN", 
+    "    MM    MM AA   AA NN   NN" 
+};
+
+/* Prints the title screen */
+void print_title(void) {
+  int title_lines = sizeof(title) / sizeof(const char *); 
+
+  int top = (LINES-title_lines)/3.0 + 0.5;
+  int i;
+
+  if( top < 5 ) top = 5;
+  for( i = 0; i < title_lines; ++i ) {
+      mvaddstr(top+i, (COLS-40)/2, title[i]);
+  }
+}
+
 int draw( int fehler ) {
     int x, y;
     getyx(stdscr, y, x);
