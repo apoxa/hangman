@@ -8,7 +8,6 @@ IMPROVEMENTS:
 
 * Some kind of multi-player support
 * Maybe a word-list for single-player
-* Translate to english
 * New Makefile to be more variable
 * Complete redesign of the ugly code
 * Splashscreen

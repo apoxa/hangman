@@ -25,12 +25,12 @@ void print_title(void) {
   }
 }
 
-int draw( int fehler ) {
+int draw( int errors ) {
     int x, y;
     getyx(stdscr, y, x);
     y += 2;
     attron(A_BOLD);
-    switch(fehler) {
+    switch(errors) {
         case 8:
             attroff(A_BOLD);
             attron(COLOR_PAIR(1));
@@ -64,13 +64,13 @@ int draw( int fehler ) {
     return 0;
 }
 
-int print_answer( int laenge, char ratewort[]) {
+int print_answer( int length, char word[]) {
     int cury = 0, curx = 18;
     int i;
     move(cury,curx);
     clrtoeol();
-    for( i = 0; i < laenge; i++) {
-        mvprintw(cury, curx+1,"%c", ratewort[i]);
+    for( i = 0; i < length; i++) {
+        mvprintw(cury, curx+1,"%c", word[i]);
         getyx(stdscr, cury, curx);
     }
     return 0;

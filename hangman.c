@@ -2,184 +2,183 @@
 #include <ctype.h>
 #include <string.h>
 #include <ncurses.h>
-#include "functions.h"       // eigene Header-Datei mit der Funktion fuer den Galgen
+#include "functions.h"       // some functions for the title and the gibbet
 #define CORD getyx(stdscr, cury, curx)
 #define CLOSE endwin(); return 0
-#define BACKSPACE 127
+#define BACKSPACE 127       // should be checked somewhere else, dynamically
 
 WINDOW *create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW *local_win);
 
 int main(void) {
-    char txt_3[] = "Bitte gib einen Text mit maximal 80 Zeichen ein: ";
-    char wiederholen;
+    char txt_3[] = "Please enter a text with at most 80 characters: ";
+    char repeat;
     int i = 0;
-    initscr();      // curses initialisieren
+    initscr();      // initialize the curses-screen
     keypad(stdscr,TRUE);
-    start_color();  // farben einschalten
+    start_color();  // turn on colors (should be checked first)
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
 
     do {
-        char ratewort[80];      // Zu erratendes Wort
-        char falsche[26] = { '\0' };       // Bereits falsch geratene Buchstaben
-        char eingabe;           // Rate-Eingabe des Spielers
-        int worteingabe = -1;   // Einge des zu erratenden Wortes
-        int laenge = 0, versuche = 0, fehler = 0;       // verschiedene Zwischenspeicher
-        int cury = 0, curx = 0;         // cursor-koordinaten
+        char word[80];      // word to guess
+        char wrongletters[26] = { '\0' };       // letters already guessed wrong
+        char input;           // input-letter from the user
+        int letter = -1;   // Read single letters for the word to guess
+        int length = 0, tries = 0, errors = 0;       // some buffers
+        int cury = 0, curx = 0;         // cursor coordinates
         move(cury,curx); clear();
         print_title();
         CORD;
         mvprintw(cury+2,(COLS-49)/2, txt_3);
         CORD; move(cury+2,(COLS-49)/2);
-        cbreak();       // input sofort nehmen, nicht auf \n warten
-        noecho();       // Eingaben nicht anzeigen
+        cbreak();       // get input, don't wait for \n
+        noecho();       // don't echo user-input
     
         do {
-            worteingabe = getch();          // eingabe lesen
-            if ( (worteingabe != BACKSPACE) && ((worteingabe < 65) || (worteingabe > 122)) && (worteingabe != 32) ) {
+            letter = getch();          // read user-input
+            if ( (letter != BACKSPACE) && ((letter < 65) || (letter > 122)) && (letter != 32) ) {
             }
             else {
-                switch(worteingabe) {
+                switch(letter) {
                     case BACKSPACE:
-                        if ( laenge > 0 ) laenge--;
+                        if ( length > 0 ) length--;
                         CORD;
-                        if ( curx > strlen(txt_3) ) mvdelch(2,curx-1);
+                        if ( curx > (COLS-49)/2 ) mvdelch(cury,curx-1);
                         break;
                     case '\n':
-                        ratewort[laenge] = '\0';
+                        word[length] = '\0';
                         break;
                     default:
-                        ratewort[laenge] = worteingabe;
-                        laenge++;
+                        word[length] = letter;
+                        length++;
                         CORD;
-                        mvprintw(cury,curx,  "%c", ( ((worteingabe >= 65) && (worteingabe <= 122)) ? '*' : worteingabe ));
+                        mvprintw(cury,curx,  "%c", ( ((letter >= 65) && (letter <= 122)) ? '*' : letter ));
                 }
             }
-        } while ( worteingabe != '\n' && strlen(ratewort) < 81);
+        } while ( letter != '\n' && strlen(word) < 81);
 
-        if ( strlen(ratewort) == 80 ) {
-                mvprintw(cury+2,(COLS-40)/2, "Sie haben die maximale Anzahl von Zeichen eingebgeben.");
+        if ( strlen(word) == 80 ) {
+                mvprintw(cury+2,(COLS-40)/2, "You've entered the maximum number of letters.");
                 getch();
         }
     
-        // verschiedene Buchstaben zaehlen um eine Bewertung nach Versuchen zu machen
-        char buchstaben[laenge];
-        int buchstaben_index = -1, x = 0, y;
-        bool gefunden;
-        for (; ratewort[x] != 0; x++) {         // jeden Buchstaben durchgehen
-            gefunden = false;
-            for ( y = 0; y <= buchstaben_index; y++) {  // alle gefundenen buchstaben durchgehen
-                if ( buchstaben[buchstaben_index] == ratewort[x] ) gefunden = true;     // wenn er schon vorkommt
-            }                                                                           // gefunden auf true setzen
-            if ( !gefunden ) buchstaben[++buchstaben_index] == ratewort[x];             // wenn er nicht gefunden wurde
-        }                                                                               // Zaehler hochsetzen
+        // count different letters in the word
+        char letters[length];
+        int letter_index = -1, x = 0, y;
+        bool found;
+        for (; word[x] != 0; x++) {         // go through the whole array
+            found = false;
+            for ( y = 0; y <= letter_index; y++) {  // go through every single letter
+                if ( letters[letter_index] == word[x] ) found = true;     // if letter already found set
+            }                                                             // found to true
+            if ( !found ) letters[++letter_index] == word[x];             // if letter appears for 
+        }                                                                 // first time, count it
     
-        char geraten[laenge];
-        for ( i = 0; i < laenge; i++ ) {
-            geraten[i] = (ratewort[i] >= 65 && ratewort[i] <= 122) ? '_' : ratewort[i];
+        char guessings[length];
+        for ( i = 0; i < length; i++ ) {
+            guessings[i] = (word[i] >= 65 && word[i] <= 122) ? '_' : word[i];
         }
     
         clear();
-        echo();         // Tastatureingaben wieder sichtbar
+        echo();         // echo the user-input
     
         do {
-            bool richtig = false;
-            bool doppelt = false;
-            bool bereitsfalsch = false;
-            mvprintw(0,0,"Zu ratender Text: ");
-            for( i = 0; i < laenge; i++) {
+            bool right = false;
+            bool twice = false;
+            bool already_false = false;
+            mvprintw(0,0,"Word to guess: ");
+            for( i = 0; i < length; i++) {
                 CORD;
-                mvprintw(cury, curx+1,"%c", geraten[i]);
+                mvprintw(cury, curx+1,"%c", guessings[i]);
             }
-            mvprintw(cury+1, 0,"Welchen Buchstaben wollen Sie raten? ");
-            eingabe = getch();              // Eingabe lesen
+            mvprintw(cury+1, 0,"Which letter do you want to guess? ");
+            input = getch();              // read input
             CORD;
             mvdelch(cury,curx-1);
         
-            if ( eingabe == '*' ) {
+            if ( input == '*' ) {
                 CORD;
-                print_answer(laenge, ratewort);
+                print_answer(length, word);
                 CORD;
-                mvprintw(cury+2, 0, "Die Lösung ist: %s", ratewort);
-                goto ENDE;
+                mvprintw(cury+2, 0, "The answer is: %s", word);
+                goto END;
             }
-            for( i = 0; i < laenge; i++) {
-                if( toupper(eingabe) == toupper(geraten[i]) ) {
-                    doppelt = true;
+            for( i = 0; i < length; i++) {
+                if( toupper(input) == toupper(guessings[i]) ) {
+                    twice = true;
                 }
-                if( toupper(eingabe) == toupper(ratewort[i]) ) {
-                    geraten[i] = ratewort[i];
-                    richtig = true;
+                if( toupper(input) == toupper(word[i]) ) {
+                    guessings[i] = word[i];
+                    right = true;
                 }
             }
 
-            if ( richtig != true ) {
+            if ( right != true ) {
                 for( i = 0; i < 26; i++) {
-                    if( toupper(eingabe) == falsche[i] ) {
-                        bereitsfalsch = true;
+                    if( toupper(input) == wrongletters[i] ) {
+                        already_false = true;
                     }
                 }
-                if ( bereitsfalsch != true ) {
-                    int falschlen = strlen(falsche);
-                    falsche[falschlen] = toupper(eingabe);
-                    fehler++;
-                    mvprintw(4,0, "Anzahl der Fehlversuche: %i", fehler);
-                    mvprintw(5,0, "Bereits gewaehlte Buchstaben: ");
-                    for( i = 0; i <= fehler; i++ ) {
+                if ( already_false != true ) {
+                    int wrong_len = strlen(wrongletters);
+                    wrongletters[wrong_len] = toupper(input);
+                    errors++;
+                    mvprintw(4,0, "Number of errors: %i", errors);
+                    mvprintw(5,0, "Already wrong letters: ");
+                    for( i = 0; i <= errors; i++ ) {
                         CORD;
-                        mvprintw(cury, curx+1, "%c", falsche[i]);
+                        mvprintw(cury, curx+1, "%c", wrongletters[i]);
                     }
-                    draw(fehler);
+                    draw(errors);
                     move(cury,curx);
-                    if ( fehler >= 8 ) {
+                    if ( errors >= 8 ) {
                         move(cury+1,0);
                         clrtoeol();
                         attron(COLOR_PAIR(1));
-                        mvprintw(cury+1,0, "Sie haben dieses Spiel verloren! Das zu erratende Wort war %s", ratewort);
+                        mvprintw(cury+1,0, "You lost this round. The word to guess was %s", word);
                         attroff(COLOR_PAIR(1));
-                        goto ENDE;
+                        goto END;
                     }
                 }
             }
-            if( doppelt != true ) { 
-                versuche++; 
+            if( twice != true ) { 
+                tries++; 
             }
             refresh();
-        } while ( strncmp( ratewort, geraten, laenge) );
+        } while ( strncmp( word, guessings, length) );
     
-        // Alle . durch den Buchstaben ersetzen
+        // Print all letters instead of dots
         cury = 0; curx = 18;
         move(cury,curx);
         clrtoeol();
-        for( i = 0; i < laenge; i++) {
-            mvprintw(0, curx+1,"%c", ratewort[i]);
+        for( i = 0; i < length; i++) {
+            mvprintw(0, curx+1,"%c", word[i]);
             CORD;
         }
     
-        clrtobot();     // alles bis zum Bildschirmende entfernen (Galgen)
+        clrtobot();     // clear to bottom, to remove the gibbet
         attron(COLOR_PAIR(2));
-        mvprintw(cury+2, 0, "Das zu erratende Wort war: ");
+        mvprintw(cury+2, 0, "The word to guess was: ");
         attron(A_BOLD);
-        mvprintw(cury+2, 27, "%s", ratewort);
+        mvprintw(cury+2, 27, "%s", word);
         attroff(A_BOLD);
-        //mvprintw(cury+3, 0,"Sie haben %i Versuche gebraucht, Sie %s.\n", versuche, (versuche > ( buchstaben_index + 2 ) ? "Trottel" : "Genie"));
-        mvprintw(cury+3, 0, "Du hast %i Versuche gebraucht.", versuche);
+        mvprintw(cury+3, 0, "You needed %i tries.", tries);
         attroff(COLOR_PAIR(2));
-        ENDE:
+        END:
         refresh();
-        WINDOW *end_win;        // Fenster mit Frage nach neuer Runde
+        WINDOW *end_win;        // Window with the question to repeat the game
         int height = 3;
         int width = 48;
-        int starty = ( LINES - height ) / 2;        // Box in der Mitte des Terminals anzeigen
+        int starty = ( LINES - height ) / 2;        // place the box in the middle of the screen
         int startx = ( COLS - width ) / 2;
         end_win = create_newwin(height, width, starty, startx);
-        mvwprintw(end_win,1,3, "Wollen Sie noch eine Runde spielen? (J/N) ");
+        mvwprintw(end_win,1,3, "Do you want to play another round? (Y/N) ");
         wrefresh(end_win);
         nocbreak();
-        wiederholen = wgetch(end_win);
-        flushinp();     // Eingabepuffer von curses loeschen, sonst probleme wegen NewLine
-    } while ( toupper(wiederholen) == 'J' );
+        repeat = wgetch(end_win);
+        flushinp();     // Clear input-buffers of curses, to resolve problems with a newline
+    } while ( toupper(repeat) == 'Y' );
     
     CLOSE;
 }
@@ -188,9 +187,9 @@ WINDOW *create_newwin(int height, int width, int starty, int startx) {
 	WINDOW *local_win;
     
 	local_win = newwin(height, width, starty, startx);
-	box(local_win, 0 , 0);		/* 0, 0 sind die Standardzeichen 
-                                 * fuer die Linien am Rand */
-	wrefresh(local_win);		/* Box auch wirklich anzeigen */
+	box(local_win, 0 , 0);		/* 0, 0 are standard-chars 
+                                         * for the borders */
+	wrefresh(local_win);		/* refresh screen to show the box */
     
 	return local_win;
 }
@@ -198,16 +197,16 @@ WINDOW *create_newwin(int height, int width, int starty, int startx) {
 
 void destroy_win(WINDOW *local_win) {	
 	wborder(local_win, ' ', ' ', ' ',' ',' ',' ',' ',' ');
-	/* Die uebergeben Parameter sind 
-	 * 1. win: Das Fenster auf das es angewendet wird
-	 * 2. ls: Character fuer die linke Seite des Fensters
-	 * 3. rs: Character fuer die rechte Seite des Fensters 
-	 * 4. ts: Character fuer die Oberseite des Fensters 
-	 * 5. bs: Character fuer die Unterseite des Fensters 
-	 * 6. tl: Character fuer die linke obere Ecke
-	 * 7. tr: Character fuer die rechte obere Ecke 
-	 * 8. bl: Character fuer die linke untere Ecke 
-	 * 9. br: Character fuer die rechte untere Ecke
+	/* Parameters are
+	 * 1. win: Window to print on
+	 * 2. ls: Character for the left side
+	 * 3. rs: Character for the right side
+	 * 4. ts: Character for the top side
+	 * 5. bs: Character for the bottom side
+	 * 6. tl: Character for the top left corner
+	 * 7. tr: Character for the top right border
+	 * 8. bl: Character for the bottom left corner
+	 * 9. br: Character for the bottom right corner
 	 */
 	wrefresh(local_win);
 	delwin(local_win);
