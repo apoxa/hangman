@@ -5,7 +5,7 @@
 #include "functions.h"       // some functions for the title and the gibbet
 #define CORD getyx(stdscr, cury, curx)
 #define CLOSE endwin(); return 0
-#define BACKSPACE 127       // should be checked somewhere else, dynamically
+#define BACKSPACE 127       // TODO should be checked somewhere else, dynamically
 
 WINDOW *create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW *local_win);
