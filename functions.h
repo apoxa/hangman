@@ -65,7 +65,7 @@ int draw( int errors ) {
 }
 
 int print_answer( int length, char word[]) {
-    int cury = 0, curx = 18;
+    int cury = 0, curx = 16;
     int i;
     move(cury,curx);
     clrtoeol();

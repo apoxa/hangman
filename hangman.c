@@ -5,7 +5,7 @@
 #include "functions.h"       // some functions for the title and the gibbet
 #define CORD getyx(stdscr, cury, curx)
 #define CLOSE endwin(); return 0
-#define BACKSPACE 127       // TODO should be checked somewhere else, dynamically
+#define BACKSPACE 263       // TODO should be checked somewhere else, dynamically
 
 WINDOW *create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW *local_win);
@@ -19,14 +19,18 @@ int main(void) {
     start_color();  // turn on colors (should be checked first)
     init_pair(1, COLOR_RED, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
-
+    char word[80];      // word to guess
+    char wrongletters[26];       // letters already guessed wrong
+    char input;           // input-letter from the user
+    int letter;   // Read single letters for the word to guess
+    int length, tries, errors;       // some buffers
+    int cury, curx;         // cursor coordinates
+ 
     do {
-        char word[80];      // word to guess
-        char wrongletters[26] = { '\0' };       // letters already guessed wrong
-        char input;           // input-letter from the user
-        int letter = -1;   // Read single letters for the word to guess
-        int length = 0, tries = 0, errors = 0;       // some buffers
-        int cury = 0, curx = 0;         // cursor coordinates
+        word[0] = '\0';
+        wrongletters[0] = '\0';
+        letter = -1; length = 0; tries = 0; errors = 0;
+        cury = 0; curx = 0;
         move(cury,curx); clear();
         print_title();
         CORD;
@@ -149,13 +153,7 @@ int main(void) {
         } while ( strncmp( word, guessings, length) );
     
         // Print all letters instead of dots
-        cury = 0; curx = 18;
-        move(cury,curx);
-        clrtoeol();
-        for( i = 0; i < length; i++) {
-            mvprintw(0, curx+1,"%c", word[i]);
-            CORD;
-        }
+        print_answer(length, word);
     
         clrtobot();     // clear to bottom, to remove the gibbet
         attron(COLOR_PAIR(2));
