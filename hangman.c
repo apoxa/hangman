@@ -6,8 +6,6 @@
 #include "functions.h"
 #define CORD getyx(stdscr, cury, curx)
 #define CLOSE endwin(); return 0
-/* TODO should be checked somewhere else, dynamically */
-#define BACKSPACE 263
 
 WINDOW *create_newwin(int height, int width, int starty, int startx);
 void destroy_win(WINDOW * local_win);
@@ -55,14 +53,16 @@ int main(void)
         do {
             /* read user-input */
             letter = getch();
-            if ((letter != BACKSPACE) && ((letter < 65) || (letter > 122))
+            if ((letter != KEY_BACKSPACE)
+                && ((letter < 65) || (letter > 122))
                 && (letter != 32)) {
             } else {
                 switch (letter) {
-                case BACKSPACE:
+                case KEY_BACKSPACE:
                     if (length > 0)
                         length--;
                     CORD;
+                    word[length] = 0;
                     if (curx > (COLS - 49) / 2)
                         mvdelch(cury, curx - 1);
                     break;
@@ -79,7 +79,9 @@ int main(void)
                                                 letter));
                 }
             }
-        } while (letter != '\n' && strlen(word) < 81);
+            /* the user needs to enter a maximum of 80 and 
+             * a minimum of 1 letter */
+        } while ((letter != '\n' && strlen(word) < 81) || length < 1);
 
         if (strlen(word) == 80) {
             mvprintw(cury + 2, (COLS - 40) / 2,

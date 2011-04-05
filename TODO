@@ -3,7 +3,6 @@ BUG FIXES:
 * Fix some problems with the border of the window
 * Minor bugs every here and there
 * Correct calculation of current cursor location and correct printing with cursor position
-* Correct definition of the backspace key
 
 IMPROVEMENTS:
 
