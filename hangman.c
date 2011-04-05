@@ -193,7 +193,10 @@ int main(void)
         attron(A_BOLD);
         mvprintw(cury + 2, 27, "%s", word);
         attroff(A_BOLD);
-        mvprintw(cury + 3, 0, "You needed %i tries.", tries);
+        char winstr[] = "You needed %i ";
+        strcat(winstr, (tries == 1 ? "try" : "tries"));
+        strcat(winstr, ".");
+        mvprintw(cury + 3, 0, winstr, tries);
         attroff(COLOR_PAIR(2));
       END:
         refresh();
