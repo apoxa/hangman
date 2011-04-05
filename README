@@ -18,5 +18,7 @@ INSTALLATION:
 
    Hangman requires the curses library as a prerequisite.  If
 curses is not installed on your system, you may use the free ncurses
-package.  The game does not work with BSD curses, thus on BSD systems
-you will need the ncurses package.
+package.
+I actually only tested the game on FreeBSD 8.1 with curses. I don't think that
+in the current state it would compile on any other system. I'm not even sure
+if it compiles with ncurses. If you have fixes, please tell me.
