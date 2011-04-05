@@ -8,7 +8,7 @@ guess the word right, otherwise a little person will be hanged.
 You only have to guess single letters and letters you already
 guessed appear in a list to remind you of your failure!
 
-   Please mail any suggestions and bug reports to <bs@kniegeil.de>.
+   Please mail any suggestions and bug reports to <ben@unpatched.de>.
 Don't blame me too hard for the ugly code. I wrote it in about 5 hours
 and never ever did anything with curses before. It's also the first
 C-project I work on and I code C for half a year now. But I'm always
