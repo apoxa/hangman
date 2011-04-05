@@ -32,8 +32,10 @@ int main(void)
     int cury, curx;             /* cursor coordinates */
 
     do {
-        word[0] = '\0';
-        wrongletters[0] = '\0';
+        /* clear all elements of the word-arrays
+         * This also fixes a bug of wrong entrys in the wrongletters array */
+        memset(word, 0, sizeof(word));
+        memset(wrongletters, 0, sizeof(wrongletters));
         letter = -1;
         length = 0;
         tries = 0;
@@ -93,13 +95,13 @@ int main(void)
             found = false;
             /* go through every single letter */
             for (y = 0; y <= letter_index; y++) {
+                /* if letter already found set  found to true */
                 if (letters[letter_index] == word[x])
-                    found = true;       /* if letter already found set  
-                                           found to true */
+                    found = true;
             }
+            /* if letter appears for first time, count it */
             if (!found)
-                letters[++letter_index] == word[x];     /* if letter appears 
-                                                           for first time, count it */
+                letters[++letter_index] = word[x];
         }
 
         char guessings[length];
